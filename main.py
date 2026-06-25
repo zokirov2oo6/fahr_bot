@@ -12,8 +12,9 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup
+from aiohttp import web
 
-from config import BOT_TOKEN, BOSS_ID, ROLE_BOSS, ROLE_EMPLOYEE, STATUS_ACTIVE, STATUS_PENDING
+from config import BOT_TOKEN, BOSS_ID, PORT, ROLE_BOSS, ROLE_EMPLOYEE, STATUS_ACTIVE, STATUS_PENDING
 from database import db, Database
 
 
@@ -727,11 +728,31 @@ async def boss_menu_handler(message: types.Message, state: FSMContext):
     )
 
 
+# ===================== RENDER UCHUN MINI HTTP SERVER =====================
+# Render Free Web Service portni tinglashni talab qiladi, aks holda
+# "no open ports detected" xatosi bilan deploy muvaffaqiyatsiz bo'ladi.
+# Bu shunchaki "bot ishlayapti" deb javob beruvchi soxta server.
+
+async def handle_health(request):
+    return web.Response(text="Fahr bot ishlayapti ✅")
+
+
+async def start_web_server():
+    app = web.Application()
+    app.router.add_get("/", handle_health)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, host="0.0.0.0", port=PORT)
+    await site.start()
+    print(f"🌐 HTTP server {PORT}-portda ishga tushdi (Render health-check uchun)")
+
+
 # ===================== BOT ISHGA TUSHIRISH =====================
 
 async def main():
-    """Botni ishga tushirish"""
+    """Botni va HTTP serverni bir vaqtda ishga tushirish"""
     print("🤖 Bot ishga tushmoqda...")
+    await start_web_server()
     await dp.start_polling(bot)
 
 
