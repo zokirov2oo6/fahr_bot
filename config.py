@@ -3,11 +3,19 @@
 # Konfiguratsiya fayli
 # ============================================================================
 
+import os
+
 # Telegram Bot Token
-BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"  # Botfather dan olingan tokenni shu yerga qo'ying
+# Render'da "Environment" bo'limiga BOT_TOKEN qo'shing.
+# Lokal kompyuterda ishlatish uchun pastdagi "YOUR_BOT_TOKEN_HERE" qiymatini o'zgartirishingiz mumkin.
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 
 # Boss (Admin) ning Telegram ID raqami
-BOSS_ID = 123456789  # O'z Telegram ID raqamingizni shu yerga yozing
+# Render'da "Environment" bo'limiga BOSS_ID qo'shing.
+BOSS_ID = int(os.environ.get("BOSS_ID", "123456789"))
+
+# Render bepul Web Service o'zining portini PORT environment variable orqali beradi
+PORT = int(os.environ.get("PORT", "10000"))
 
 # Database fayli nomi
 DATABASE_FILE = "fahr_bot.db"
